@@ -41,15 +41,35 @@ function Dots({ imp }) {
 }
 
 function Ticker({ quotes }) {
-  if (!quotes.length) return null;
-  const all = [...quotes, ...quotes];
+  const [live, setLive] = useState([]);
+
+  useEffect(() => {
+    if (!quotes.length) return;
+    setLive(quotes.map(q => ({ ...q, display: q.c })));
+  }, [quotes]);
+
+  useEffect(() => {
+    if (!live.length) return;
+    const id = setInterval(() => {
+      setLive(prev => prev.map(q => {
+        const spread = q.label === "USD/JPY" ? 0.008 : q.label === "XAU/USD" ? 0.5 : 0.00005;
+        const tick = (Math.random() - 0.5) * spread * 2;
+        const display = parseFloat((q.display + tick).toFixed(q.c > 100 ? 2 : 5));
+        return { ...q, display };
+      }));
+    }, 800);
+    return () => clearInterval(id);
+  }, [live.length]);
+
+  if (!live.length) return null;
+  const all = [...live, ...live];
   return (
     <div className="ticker">
       <div className="tk-track">
         {all.map((q, i) => (
           <div key={i} className="tk-item">
             <span className="tk-sym">{q.label}</span>
-            <span>{q.c?.toFixed(q.c > 100 ? 2 : 4)}</span>
+            <span>{q.display?.toFixed(q.c > 100 ? 2 : 4)}</span>
             <span className={q.dp >= 0 ? "up" : "dn"}>{q.dp >= 0 ? "+" : ""}{q.dp?.toFixed(2)}%</span>
           </div>
         ))}
