@@ -432,7 +432,7 @@ export default function Home() {
             </div>
           </div>
           <Calendar onSelect={setSelEv} selected={selEv}/>
-          <Chart quotes={quotes}/>
+          {typeof window !== "undefined" && <Chart quotes={quotes}/>}
         </div>
         <div className="sidebar">
           <AIPanel ev={selEv}/>
