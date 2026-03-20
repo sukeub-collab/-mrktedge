@@ -11,20 +11,12 @@ export default async function handler(req, res) {
       .replace('OANDA:', '')
       .replace('_', '/')
       .toUpperCase();
-
-    if (label === 'XAU/USD') {
-      try {
-        const g = await fetch('https://www.goldapi.io/api/XAU/USD', {
-          headers: { 'x-access-token': process.env.GOLD_KEY }
-        });
-        const gd = await g.json();
-        const price = gd.price || gd.ask || gd.close || gd.prev_close;
-        if (!price) return res.status(500).json({ error: 'Gold price not found', raw: gd });
-        const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
-        return res.json({ c: parseFloat(parseFloat(price).toFixed(2)), dp, symbol });
-      } catch(ge) {
-        return res.status(500).json({ error: 'Gold API error: ' + ge.message });
-      }
+if (label === 'XAU/USD') {
+      const g = await fetch('https://www.goldapi.io/api/XAU/USD', {
+        headers: { 'x-access-token': process.env.GOLD_KEY }
+      });
+      const gd = await g.json();
+      return res.json({ raw: gd });
     }
 
     const pairs = {
