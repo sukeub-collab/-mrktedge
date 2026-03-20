@@ -3,14 +3,6 @@ export default async function handler(req, res) {
   const { symbol } = req.query;
 
   try {
-    if (symbol === 'OANDA:XAU_USD') {
-      const g = await fetch('https://www.goldapi.io/api/XAU/USD', {
-        headers: { 'x-access-token': process.env.GOLD_KEY }
-      });
-      const gd = await g.json();
-      return res.json({ raw: gd });
-    }
-
     const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const d = await r.json();
     const rates = d.rates;
