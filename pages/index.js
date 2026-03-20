@@ -319,6 +319,8 @@ export default function Home() {
     loadCalendar();
     loadNewsData();
     loadQuotes();
+    const interval = setInterval(loadQuotes, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   async function loadCalendar() {
