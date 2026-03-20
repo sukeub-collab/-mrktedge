@@ -13,9 +13,9 @@ export default async function handler(req, res) {
     else if (symbol === "OANDA:GBP_USD") price = parseFloat((1 / d.rates["GBP"]).toFixed(5));
     else if (symbol === "OANDA:USD_JPY") price = parseFloat(d.rates["JPY"].toFixed(2));
     else if (symbol === "OANDA:XAU_USD") {
-      const gold = await fetch('https://metals.live/api/spot');
-      const gd = await gold.json();
-      price = gd.find(m => m.metal === "gold")?.price || null;
+      const r2 = await fetch('https://api.frankfurter.app/latest?from=XAU&to=USD');
+      const d2 = await r2.json();
+      price = parseFloat(d2.rates["USD"].toFixed(2));
     }
 
     if (!price) return res.status(404).json({ error: "Price not available" });
