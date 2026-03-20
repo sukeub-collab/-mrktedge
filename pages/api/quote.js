@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const d = await r.json();
     const rates = d.rates;
-    const label = symbol.replace('OANDA:', '').replace('_', '/').toUpperCase();
+    const label = symbol.replace('OANDA:', '').replace(/_/g, '/').toUpperCase();
 
     const pairs = {
       'EUR/USD': 1 / rates.EUR,
