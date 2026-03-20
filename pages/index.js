@@ -10,10 +10,24 @@ const ASSETS = {
 };
 
 const QUOTE_SYMS = [
-  { sym: "OANDA:EUR_USD", label: "EUR/USD" },
-  { sym: "OANDA:GBP_USD", label: "GBP/USD" },
-  { sym: "OANDA:USD_JPY", label: "USD/JPY" },
+  { sym: "EUR/USD",  label: "EUR/USD" },
+  { sym: "GBP/USD",  label: "GBP/USD" },
+  { sym: "USD/JPY",  label: "USD/JPY" },
   { sym: "OANDA:XAU_USD", label: "XAU/USD" },
+  { sym: "AUD/USD",  label: "AUD/USD" },
+  { sym: "USD/CAD",  label: "USD/CAD" },
+  { sym: "USD/CHF",  label: "USD/CHF" },
+  { sym: "NZD/USD",  label: "NZD/USD" },
+  { sym: "EUR/GBP",  label: "EUR/GBP" },
+  { sym: "EUR/JPY",  label: "EUR/JPY" },
+  { sym: "GBP/JPY",  label: "GBP/JPY" },
+  { sym: "USD/MXN",  label: "USD/MXN" },
+  { sym: "USD/CHF",  label: "USD/CHF" },
+  { sym: "USD/SEK",  label: "USD/SEK" },
+  { sym: "USD/NOK",  label: "USD/NOK" },
+  { sym: "USD/SGD",  label: "USD/SGD" },
+  { sym: "USD/TRY",  label: "USD/TRY" },
+  { sym: "USD/ZAR",  label: "USD/ZAR" },
 ];
 
 function fmtTime(ts) {
