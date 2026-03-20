@@ -109,73 +109,6 @@ function Calendar({ onSelect, selected }) {
   );
 }
 
-function Chart({ quotes }) {
-  const [asset, setAsset] = useState("EUR/USD");
-  const [candles, setCandles] = useState([]);
-  const assets = ["EUR/USD","GBP/USD","USD/JPY","AUD/USD"];
-
-  useEffect(() => {
-    const q = quotes.find(x=>x.label===asset);
-    const base = q?.c || (asset==="USD/JPY"?151.82:asset==="XAU/USD"?2348:1.08);
-    const spread = asset==="USD/JPY"?0.15:asset==="XAU/USD"?4:0.0008;
-    const out=[]; let p=base;
-    const now=Math.floor(Date.now()/1000);
-    for(let i=18;i>=0;i--){
-      const t=now-i*900;
-      const move=(Math.random()-.48)*spread*3;
-      const c=parseFloat((p+move).toFixed(5));
-      const h=parseFloat((Math.max(p,c)+Math.random()*spread).toFixed(5));
-      const l=parseFloat((Math.min(p,c)-Math.random()*spread).toFixed(5));
-      out.push({t,o:p,h,l,c}); p=c;
-    }
-    setCandles(out);
-  }, [asset, quotes.length]);
-
-  const prices=candles.flatMap(c=>[c.h,c.l]);
-  const minP=prices.length?Math.min(...prices):0;
-  const maxP=prices.length?Math.max(...prices):1;
-  const rng=maxP-minP||1;
-  const toY=p=>((maxP-p)/rng)*155;
-  const dec=asset==="USD/JPY"?2:asset==="XAU/USD"?1:4;
-
-  return (
-    <div className="card">
-      <div className="card-hdr">
-        <div className="card-title">🔍 What Moved The Market</div>
-      </div>
-      <div className="chart-wrap">
-        <div className="a-sel">
-          {assets.map(a=><button key={a} className={`a-btn${asset===a?" on":""}`} onClick={()=>setAsset(a)}>{a}</button>)}
-        </div>
-        {candles.length>0 && (
-          <>
-            <div className="chart-area">
-              {candles.map((c,i)=>{
-                const bull=c.c>=c.o;
-                const bTop=toY(Math.max(c.o,c.c));
-                const bH=Math.max(2,Math.abs(toY(c.o)-toY(c.c)));
-                const wTop=toY(c.h);
-                const wH=toY(c.l)-wTop;
-                const t=new Date(c.t*1000).toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",hour12:false});
-                return (
-                  <div key={i} className="c-col">
-                    <div className="c-wick" style={{top:wTop,height:wH,left:"50%",transform:"translateX(-50%)"}}/>
-                    <div className={`c-body ${bull?"bull":"bear"}`} style={{top:bTop,height:bH,left:"18%",right:"18%"}}/>
-                    <div className="ctip">
-                      <div className="ctip-t">{asset} · {t}</div>
-                      <div>O: {c.o.toFixed(dec)} H: {c.h.toFixed(dec)}</div>
-                      <div>L: {c.l.toFixed(dec)} C: {c.c.toFixed(dec)}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function News() {
   const [age, setAge] = useState(0);
@@ -432,7 +365,7 @@ export default function Home() {
             </div>
           </div>
           <Calendar onSelect={setSelEv} selected={selEv}/>
-          {typeof window !== "undefined" && <Chart quotes={quotes}/>}
+          
         </div>
         <div className="sidebar">
           <AIPanel ev={selEv}/>
