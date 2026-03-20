@@ -2,27 +2,25 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   const { symbol } = req.query;
 
-  const map = {
-    "OANDA:EUR_USD": { base: "USD", invert: "EUR" },
-    "OANDA:GBP_USD": { base: "USD", invert: "GBP" },
-    "OANDA:USD_JPY": { base: "USD", direct: "JPY" },
-    "OANDA:XAU_USD": { base: "USD", direct: "XAU" },
-  };
-
-  const pair = map[symbol];
-  if (!pair) return res.status(400).json({ error: "Unknown symbol" });
-
   try {
-    const r = await fetch(`https://api.exchangerate-api.com/v4/latest/USD`);
+    const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const d = await r.json();
-    let price;
-    if (pair.direct) {
-      price = d.rates[pair.direct];
-    } else {
-      price = parseFloat((1 / d.rates[pair.invert]).toFixed(5));
+
+    let price, dp;
+    dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+
+    if (symbol === "OANDA:EUR_USD") price = parseFloat((1 / d.rates["EUR"]).toFixed(5));
+    else if (symbol === "OANDA:GBP_USD") price = parseFloat((1 / d.rates["GBP"]).toFixed(5));
+    else if (symbol === "OANDA:USD_JPY") price = parseFloat(d.rates["JPY"].toFixed(2));
+    else if (symbol === "OANDA:XAU_USD") {
+      const gold = await fetch('https://metals.live/api/spot');
+      const gd = await gold.json();
+      price = gd.find(m => m.metal === "gold")?.price || null;
     }
-    const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+
+    if (!price) return res.status(404).json({ error: "Price not available" });
     res.json({ c: price, dp, symbol });
+
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
