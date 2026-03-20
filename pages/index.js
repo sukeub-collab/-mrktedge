@@ -340,6 +340,8 @@ Then on a new line write one word: BULLISH, BEARISH, or NEUTRAL`;
 }
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [events, setEvents] = useState([]);
   const [news, setNews] = useState([]);
   const [quotes, setQuotes] = useState([]);
