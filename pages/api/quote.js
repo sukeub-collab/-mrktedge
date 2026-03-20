@@ -5,23 +5,49 @@ export default async function handler(req, res) {
   try {
     const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const d = await r.json();
+    const rates = d.rates;
 
-    let price;
-    const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+    const pairs = {
+      "EUR/USD": 1 / rates.EUR,
+      "GBP/USD": 1 / rates.GBP,
+      "USD/JPY": rates.JPY,
+      "USD/CHF": rates.CHF,
+      "USD/CAD": rates.CAD,
+      "AUD/USD": 1 / rates.AUD,
+      "NZD/USD": 1 / rates.NZD,
+      "USD/MXN": rates.MXN,
+      "USD/SEK": rates.SEK,
+      "USD/NOK": rates.NOK,
+      "USD/DKK": rates.DKK,
+      "USD/SGD": rates.SGD,
+      "USD/HKD": rates.HKD,
+      "USD/TRY": rates.TRY,
+      "USD/ZAR": rates.ZAR,
+      "EUR/GBP": rates.GBP / rates.EUR,
+      "EUR/JPY": rates.JPY / rates.EUR,
+      "GBP/JPY": rates.JPY / rates.GBP,
+    };
 
-    if (symbol === "OANDA:EUR_USD") price = parseFloat((1 / d.rates["EUR"]).toFixed(5));
-    else if (symbol === "OANDA:GBP_USD") price = parseFloat((1 / d.rates["GBP"]).toFixed(5));
-    else if (symbol === "OANDA:USD_JPY") price = parseFloat(d.rates["JPY"].toFixed(2));
-    else if (symbol === "OANDA:XAU_USD") {
+    // Handle gold separately
+    if (symbol === "OANDA:XAU_USD") {
       const g = await fetch('https://www.goldapi.io/api/XAU/USD', {
         headers: { 'x-access-token': process.env.GOLD_KEY }
       });
       const gd = await g.json();
-      price = parseFloat(gd.price.toFixed(2));
+      const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+      return res.json({ c: parseFloat(gd.price.toFixed(2)), dp, symbol });
     }
 
-    if (!price) return res.status(404).json({ error: "Price not available" });
-    res.json({ c: price, dp, symbol });
+    // Extract pair label from symbol like "OANDA:EUR_USD" or plain "EUR/USD"
+    const label = symbol.includes(':') 
+      ? symbol.split(':')[1].replace('_', '/') 
+      : symbol;
+
+    const price = pairs[label];
+    if (!price) return res.status(404).json({ error: "Unknown pair" });
+
+    const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+    res.json({ c: parseFloat(price.toFixed(label.includes('JPY') || label.includes('MXN') || label.includes('TRY') || label.includes('ZAR') || label.includes('HKD') || label.includes('NOK') || label.includes('SEK') || label.includes('DKK') ? 2 : 5)), dp, symbol });
 
   } catch(e) {
     res.status(500).json({ error: e.message });
