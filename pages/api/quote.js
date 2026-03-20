@@ -6,14 +6,14 @@ export default async function handler(req, res) {
     const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const d = await r.json();
 
-    let price, dp;
-    dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+    let price;
+    const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
 
     if (symbol === "OANDA:EUR_USD") price = parseFloat((1 / d.rates["EUR"]).toFixed(5));
     else if (symbol === "OANDA:GBP_USD") price = parseFloat((1 / d.rates["GBP"]).toFixed(5));
     else if (symbol === "OANDA:USD_JPY") price = parseFloat(d.rates["JPY"].toFixed(2));
     else if (symbol === "OANDA:XAU_USD") {
-      const r2 = await fetch('https://api.frankfurter.app/latest?from=XAU&to=USD');
+      const r2 = await fetch('https://api.exchangerate-api.com/v4/latest/XAU');
       const d2 = await r2.json();
       price = parseFloat(d2.rates["USD"].toFixed(2));
     }
