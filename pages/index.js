@@ -12,7 +12,6 @@ const QUOTE_SYMS = [
   { sym: "EUR_USD",  label: "EUR/USD" },
   { sym: "GBP_USD",  label: "GBP/USD" },
   { sym: "USD_JPY",  label: "USD/JPY" },
-  { sym: "OANDA:XAU_USD", label: "XAU/USD" },
   { sym: "AUD_USD",  label: "AUD/USD" },
   { sym: "USD_CAD",  label: "USD/CAD" },
   { sym: "USD_CHF",  label: "USD/CHF" },
