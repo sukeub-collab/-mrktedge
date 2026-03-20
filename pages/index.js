@@ -319,8 +319,8 @@ export default function Home() {
     loadCalendar();
     loadNewsData();
     loadQuotes();
-    const interval = setInterval(loadQuotes, 10000);
-    return () => clearInterval(interval);
+    const id = setInterval(loadQuotes, 10000);
+    return () => clearInterval(id);
   }, []);
 
   async function loadCalendar() {
@@ -475,7 +475,7 @@ export default function Home() {
         <div className="hdr-meta">{today}</div>
       </header>
 
-      <Ticker quotes={quotes} />
+      {mounted && <Ticker quotes={quotes} />}
 
       <div className="main">
         <div className="content">
