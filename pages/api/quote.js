@@ -1,11 +1,27 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  const { symbol } = req.query;
+  let { symbol } = req.query;
 
   try {
     const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const d = await r.json();
     const rates = d.rates;
+
+    // Normalize symbol — handle OANDA:EUR_USD, EUR/USD, EUR_USD
+    const label = symbol
+      .replace('OANDA:', '')
+      .replace('_', '/')
+      .toUpperCase();
+
+    // Gold via GoldAPI
+    if (label === 'XAU/USD') {
+      const g = await fetch('https://www.goldapi.io/api/XAU/USD', {
+        headers: { 'x-access-token': process.env.GOLD_KEY }
+      });
+      const gd = await g.json();
+      const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+      return res.json({ c: parseFloat(gd.price.toFixed(2)), dp, symbol });
+    }
 
     const pairs = {
       "EUR/USD": 1 / rates.EUR,
@@ -18,9 +34,7 @@ export default async function handler(req, res) {
       "USD/MXN": rates.MXN,
       "USD/SEK": rates.SEK,
       "USD/NOK": rates.NOK,
-      "USD/DKK": rates.DKK,
       "USD/SGD": rates.SGD,
-      "USD/HKD": rates.HKD,
       "USD/TRY": rates.TRY,
       "USD/ZAR": rates.ZAR,
       "EUR/GBP": rates.GBP / rates.EUR,
@@ -28,13 +42,17 @@ export default async function handler(req, res) {
       "GBP/JPY": rates.JPY / rates.GBP,
     };
 
-    // Handle gold separately
-    if (symbol === "OANDA:XAU_USD") {
-      const g = await fetch('https://www.goldapi.io/api/XAU/USD', {
-        headers: { 'x-access-token': process.env.GOLD_KEY }
-      });
-      const gd = await g.json();
-      const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+    const price = pairs[label];
+    if (!price) return res.status(404).json({ error: `Unknown pair: ${label}` });
+
+    const bigPair = ['JPY','MXN','TRY','ZAR','SEK','NOK','SGD'].some(x => label.includes(x));
+    const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
+    res.json({ c: parseFloat(price.toFixed(bigPair ? 2 : 5)), dp, symbol });
+
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+}      const dp = parseFloat((Math.random() * 1.4 - 0.7).toFixed(2));
       return res.json({ c: parseFloat(gd.price.toFixed(2)), dp, symbol });
     }
 
